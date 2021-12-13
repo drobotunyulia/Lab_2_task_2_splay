@@ -5,6 +5,11 @@
 
 namespace splay {
     template <typename TKey, typename TValue>
+    node<TKey, TValue> *find_remove_node(node<TKey, TValue> *root_node, TKey key, comparator<TKey> *key_comparator)
+    {
+        return bst::find_remove_node(root_node, key, key_comparator);
+    }
+    template <typename TKey, typename TValue>
     node<TKey, TValue> *rotate_right(node<TKey, TValue> *p_node)
     {
         node<TKey, TValue> *q_node = p_node->left;
@@ -236,27 +241,7 @@ status_t splay_tree<TKey, TValue>::splay_remove_template_method::inner_remove(
     node<TKey, TValue> *remove_node = nullptr;
     node<TKey, TValue> *right_node = nullptr;
     node<TKey, TValue> *left_node = nullptr;
-    while(current_node)
-    //ищем удаляемый элемент
-    {
-        compare_t compare_result = (*key_comparator)(key, current_node->key);
-        if (compare_result == LESS)
-        //идем по левой стороне
-        {
-            current_node = current_node->left;
-        }
-        else if (compare_result == GREAT)
-        //идем по правой стороне
-        {
-            current_node = current_node->right;
-        }
-        else if (compare_result == EQUAL)
-        //элемент найден
-        {
-            remove_node = current_node;
-            break;
-        }
-    }
+    remove_node = splay::find_remove_node(root_node, key, key_comparator);
     if (!remove_node)
     //удаляемый элемент отсутствует
     {
