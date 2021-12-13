@@ -21,6 +21,32 @@ enum status_t {
 
 namespace bst {
     template <typename TKey, typename TValue>
+    node<TKey, TValue> *find_remove_node(node<TKey, TValue> *root_node, TKey key, comparator<TKey> *key_comparator)
+    {
+        node <TKey, TValue> *current_node = root_node;
+        while(current_node)//выделить все алгоритмы в отдельный класс
+        //ищем удаляемый элемент
+        {
+            compare_t compare_result = (*key_comparator)(key, current_node->key);
+            if (compare_result == LESS)
+            //идем по левой стороне
+            {
+                current_node = current_node->left;
+            }
+            else if (compare_result == GREAT)
+           //идем по правой стороне
+        {
+            current_node = current_node->right;
+        }
+        else if (compare_result == EQUAL)
+        //элемент найден
+        {
+            return current_node;
+        }
+    }
+    return current_node;
+}
+    template <typename TKey, typename TValue>
     node<TKey, TValue> *get_left(node<TKey, TValue> *p_node)
     //получить указатель на левого потомка
     {
@@ -589,27 +615,7 @@ status_t binary_tree<TKey, TValue>::remove_template_method::inner_remove(
     node<TKey, TValue> *replace_parent_node = nullptr;
     node<TKey, TValue> *current_node = root_node;
     node<TKey, TValue> *remove_node = nullptr;
-    while(current_node)
-    //ищем удаляемый элемент
-    {
-        compare_t compare_result = (*key_comparator)(key, current_node->key);
-        if (compare_result == LESS)
-        //идем по левой стороне
-        {
-            current_node = current_node->left;
-        }
-        else if (compare_result == GREAT)
-        //идем по правой стороне
-        {
-            current_node = current_node->right;
-        }
-        else if (compare_result == EQUAL)
-        //элемент найден
-        {
-            remove_node = current_node;
-            break;
-        }
-    }
+    remove_node = bst::find_remove_node(root_node, key, key_comparator);
     if (!remove_node)
     //удаляемый элемент отсутствует
     {
